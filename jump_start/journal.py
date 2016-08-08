@@ -1,43 +1,33 @@
-def main():
-    print_header()
-    run_event_loop()
+import os
 
 
-def print_header():
-    print('-----------------------------------------')
-    print('              JOURNAL APP')
-    print('-----------------------------------------')
+def load(name):
+    data = []
+    filename = get_full_pathname(name)
+
+    if os.path.exists(filename):
+        with open(filename) as fin:
+            for entry in fin.readlines():
+                # print("would load: " + entry.rstrip())
+                data.append(entry.rstrip())
+
+    return data
 
 
-def run_event_loop():
-    print('What do you want to do with your journal?')
-    cmd = None
-    journal_data = []
+def save(name, journal_data):
+    filename = get_full_pathname(name)
+    print(".....saving to: {}".format(filename))
 
-    while cmd != 'X':
-        cmd = input('([L]ist entries, [A]dd an entry, E[x]it:')
-        cmd = cmd.upper().strip()
-
-        if cmd == 'L':
-            list_entries(journal_data)
-        elif cmd == 'A':
-            add_entry(journal_data)
-        elif cmd != 'X':
-            print("Sorry, we don't understand '{}".format(cmd))
-
-    print('Done, goodbye.')
+    with open(filename, 'w') as fout:
+        for entry in journal_data:
+            fout.write(entry + '\n')
 
 
-def list_entries(data):
-    print("Your journal entries")
-    entries = reversed(data)
-    for idx, entry in enumerate(entries):
-        print('* [{}] {}'.format(idx+1, entry))
+def get_full_pathname(name):
+    filename = os.path.abspath(os.path.join('.', 'journals', name + '.jrl'))
+    return filename
 
 
-def add_entry(data):
-    text = input('Type you entry, <enter> to exit: ')
-    data.append(text)
+def add_entry(text, journal_data):
+    journal_data.append(text)
 
-
-main()
